@@ -23,8 +23,12 @@
 - **Automation**: Cron job `Bolt-Jules-Command-Monitor` (ID: 605f180d) engaged for 5-minute status polling.
 - **Status**: Build in progress.
 
-## 2026-02-23 20:49
-- **Task**: UI Performance Refactor.
-- **Action**: Applied changes from Jules session `1596029801303085932`.
-- **Changes**: Refactored `ui/control-center.html` for performance optimizations.
-- **Status**: Completed. Changes pushed to `main` (commit `a7f3220`).
+## 2026-02-23 20:55
+- **Task**: Command Tab Implementation.
+- **Action**: Applied changes from Jules session `1536873453855423208`.
+- **Changes**:
+    - Implemented a "Command" tab in `ui/control-center.html`.
+    - Added Subagent Status and Token Usage tracking.
+    - Added Manual Overrides (Steer/Abort) to the UI.
+    - Updated `ui/live_status.js` with session data.
+- **Status**: Completed. Changes pushed to `main` (commit `71511e3`).
