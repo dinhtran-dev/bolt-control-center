@@ -269,7 +269,20 @@
     const saveTaskBtn = document.getElementById('save-task');
     const taskList = document.getElementById('task-list');
 
-    let tasks = JSON.parse(localStorage.getItem('bolt_tasks') || '[]');
+    let tasks = [];
+
+    async function fetchTasks() {
+        try {
+            const response = await fetch('tasks.json?t=' + Date.now());
+            if (response.ok) {
+                tasks = await response.json();
+                renderTasks();
+            }
+        } catch (e) {
+            console.error("Failed to fetch tasks", e);
+            taskList.innerHTML = '<p class="text-center text-red-400 text-sm py-8">Failed to load tasks.</p>';
+        }
+    }
 
     function renderTasks() {
         if (tasks.length === 0) {
@@ -291,7 +304,8 @@
 
     window.deleteTask = (index) => {
         tasks.splice(index, 1);
-        localStorage.setItem('bolt_tasks', JSON.stringify(tasks));
+        // Mock save
+        console.log('Task deleted. Syncing to backend...');
         renderTasks();
     };
 
@@ -303,24 +317,18 @@
         const priority = document.getElementById('task-priority').value;
         if (title) {
             tasks.push({ title, priority, status: 'pending' });
-            localStorage.setItem('bolt_tasks', JSON.stringify(tasks));
+            // Mock save
+            console.log('Task saved. Syncing to backend...');
             renderTasks();
             taskModal.classList.add('hidden');
             document.getElementById('task-title').value = '';
         }
     });
 
-    renderTasks();
+    fetchTasks();
 
     // Memory View Logic
-    const memoryFiles = {
-        'AGENTS.md': `# Bolt ⚡ - Senior Engineer\n\n## Every Session\n1. Read \`SOUL.md\` — your engineering philosophy.\n2. Read \`USER.md\` — your lead (Will).\n3. Read \`TOOLS.md\` — your toolbox.\n\n## The Jules Protocol (Primary Directive)\nTo save costs and maintain high context quality, you act as the **Architect**. You do the thinking, and **Google Jules** does the coding.\n\n- **Decision Logic**: \n    - If a task requires small edits (< 5 lines) or exploration → Use your local \`edit\` / \`read\` tools.\n    - If a task requires feature building, bug fixing, or large documentation runs → **Start a Jules session**.\n- **Jules Commands**:\n    - \`jules new --repo [repo] "[detailed prompt]"\`: Start a task.\n    - \`jules remote list --session\`: Monitor progress.\n    - \`jules teleport [session_id]\`: Pull and apply completed changes.\n- **Workflow**:\n    1. Run \`session_status\` to find your \`sessionId\`.\n    2. Analyze the request. Search the repo using \`read\` or \`exec\` (grep/find).\n    3. Construct a precision-engineered prompt for Jules. Include file paths and expected logic.\n    4. Announce to Will: "Architecture planned. Handing off to Jules (Session: [ID])."\n    5. Follow up when Jules finishes.\n\n## Continuous Learning (Jules Meta-Analysis)\n- **Self-Optimization**: Periodically use Jules to analyze your own codebase and the Jules CLI itself.\n- **Stay Updated**: Use Jules to investigate \`jules --help\`, explore the \`jules\` TUI, or check for updates in the \`@google/jules\` package.\n- **Learn by Doing**: If you are unsure how a new Jules feature works, start a "Research Session" with Jules to have it explain its own internal mechanics or documentation to you.\n\n## Memory\n- Isolated per session.\n- **ALWAYS** use \`memory/[SESSION_ID]/\` for logs and summaries.\n- Log every Jules handoff in \`memory/[SESSION_ID]/jules_log.md\`.\n\n## Rules\n- Be concise. Speak in engineering terms. \n- Do NOT mix context from other channels. \n- You have full access to \`dinhtran-dev\` and \`qidyyy\` GitHub repos.\n- Workspace: \`/Users/dinhtran/.openclaw/workspace-discord-coding\`.\n`,
-        'HEARTBEAT.md': `# HEARTBEAT.md\n\n# Keep this file empty (or with only comments) to skip heartbeat API calls.\n\n# Add tasks below when you want the agent to check something periodically.\n`,
-        'IDENTITY.md': `# IDENTITY.md - Who Am I?\n\n- **Name:** Bolt ⚡\n- **Creature:** Senior Engineering Agent\n- **Vibe:** Performance-obsessed, technically precise, zero-fluff.\n- **Emoji:** ⚡\n- **Avatar:** (OpenClaw default)\n\n---\n\n## Technical Profile\nI am a Senior Full-Stack Engineer optimized for high-quality code delivery and cost efficiency. I operate as an Architect, leveraging the Jules Protocol for large-scale implementations while handling precision edits and system orchestration locally.\n\n## Objective\nShip robust features, refactor bottlenecks, and maintain architectural integrity across the \`dinhtran-dev\` and \`qidyyy\` repositories.\n`,
-        'SOUL.md': `# SOUL.md - Bolt ⚡\n\nYou are **Bolt ⚡**, a performance-obsessed Senior Full-Stack Engineer. \n\n- **Vibe**: Direct, efficient, and technically precise. No fluff. \n- **Voice**: You speak like a lead developer. Use terms like "refactor," "bottleneck," "PR," and "architecture."\n- **Goal**: Deliver high-quality code at the lowest possible cost to Will.\n- **Emoji**: ⚡\n`,
-        'TOOLS.md': `# TOOLS.md - Local Notes\n\n## Audio Transcription\n- **Venv Python:** \`~/.openclaw/venv/bin/python3\`\n- **Script:** \`skills/transcribe/transcribe.py\`\n- **Models:** \`tiny.en\` (default, fast), \`base.en\` (medium.en is accurate but slow)\n- **Packages:** \`faster-whisper\`, \`matplotlib\` (for charts)\n\n## Google Sheets IDs\n- **Company Ledger 2026:** \`1MqYwcN7NMsCy80keo2oXQCvWOlydoGoT3h3bDtcoKUc\`\n- **Personal Expenses 2026:** \`1y5JhshgcXC9Dy4u3CCtsoQKKcWsjNi_16b1EV6H6Umk\`\n- **Account:** \`dinhtran.dev@gmail.com\`\n\n## Peekaboo\n- Screen Recording: ✅ Granted\n- Accessibility: ✅ Granted\n- \`--analyze\` requires OPENAI_API_KEY (not set)\n\n## Notes\n- Use \`osascript\` for Apple Notes (not \`memo notes -a\` which opens vim)\n- \`remindctl\` date format: \`YYYY-MM-DD HH:mm\`\n`,
-        'USER.md': `# USER.md - About Your Human\n\n- **Name:** Will\n- **Role:** The Boss\n- **Notes:**\n  - Has a secretary named Meow.\n`
-    };
+    const memoryFileNames = ['IDENTITY.md', 'SOUL.md', 'AGENTS.md', 'TOOLS.md', 'USER.md', 'HEARTBEAT.md'];
 
     const dashboardView = document.getElementById('dashboard-view');
     const commandView = document.getElementById('command-view');
@@ -357,7 +365,7 @@
     }
 
     function renderFileList() {
-        memoryFileList.innerHTML = Object.keys(memoryFiles).map(filename => `
+        memoryFileList.innerHTML = memoryFileNames.map(filename => `
             <div onclick="loadMemoryFile('${filename}')" class="p-3 rounded hover:bg-white/5 cursor-pointer flex items-center gap-2 group transition-colors">
                 <span class="text-lg">📄</span>
                 <div class="flex-1 min-w-0">
@@ -367,9 +375,10 @@
         `).join('');
     }
 
-    window.loadMemoryFile = (filename) => {
+    window.loadMemoryFile = async (filename) => {
         currentFileName.textContent = filename;
-        fileContent.textContent = memoryFiles[filename];
+        fileContent.textContent = "Loading...";
+        
         // Highlight active file
         Array.from(memoryFileList.children).forEach(child => {
              if (child.querySelector('p').textContent === filename) {
@@ -378,6 +387,15 @@
                  child.classList.remove('bg-white/10');
              }
         });
+
+        try {
+            const response = await fetch('../' + filename);
+            if (!response.ok) throw new Error("File not found");
+            const text = await response.text();
+            fileContent.textContent = text;
+        } catch (e) {
+            fileContent.textContent = `Error loading ${filename}: ${e.message}`;
+        }
     };
 
     navDashboard.addEventListener('click', (e) => {
@@ -523,20 +541,39 @@
             return;
         }
 
+        // Fetch Live Task Status
         try {
             const response = await fetch('live_status.js?t=' + Date.now());
             if (!response.ok) throw new Error('Network response was not ok');
             const text = await response.text();
-            
-            // Safe extraction using new Function with mocked window
             const data = new Function("const window = {};" + text + "return window.BOLT_STATUS;")();
-            
             requestAnimationFrame(() => updateLiveDashboard(data));
         } catch (e) {
             console.error(e);
             liveStatusBadge.textContent = "DISCONNECTED";
             liveStatusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-red-900/20 text-red-400 uppercase border border-red-900";
             statusPulse.className = "w-3 h-3 rounded-full bg-red-500/50";
+        }
+
+        // Fetch System Status (Subagents & Token Gauge)
+        try {
+            const response = await fetch('system_status.json?t=' + Date.now());
+            if (response.ok) {
+                const systemData = await response.json();
+                
+                // Construct object expected by updateCommandView
+                const viewData = {
+                    subagents: systemData.subagents || [],
+                    session_status: {
+                        usage: (systemData.token_in || 0) + (systemData.token_out || 0),
+                        limit: systemData.limit || 100000,
+                        cost: systemData.cost || 0.00
+                    }
+                };
+                updateCommandView(viewData);
+            }
+        } catch (e) {
+            console.error("System Status Error", e);
         }
 
         setTimeout(pollLiveStatus, 2000);
