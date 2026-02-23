@@ -12,5 +12,14 @@ window.BOLT_STATUS = {
     ],
     logs: [
         { level: "info", message: "System initialized. Dashboard online.", timestamp: Date.now() }
-    ]
+    ],
+    subagents: [
+        { name: "Jules", status: "active", task: "Optimizing database queries" },
+        { name: "Meow", status: "idle", task: "Standing by" }
+    ],
+    session_status: {
+        usage: 45000,
+        limit: 100000,
+        cost: 0.45
+    }
 };

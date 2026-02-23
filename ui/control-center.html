@@ -41,6 +41,7 @@
         </div>
         <nav class="flex-1 p-4 space-y-2">
             <a href="#" id="nav-dashboard" class="block p-3 rounded bg-yellow-400/10 text-yellow-400 font-medium">Dashboard</a>
+            <a href="#" id="nav-command" class="block p-3 rounded hover:bg-white/5 text-gray-400">Command</a>
             <a href="#" class="block p-3 rounded hover:bg-white/5 text-gray-400">Tasks</a>
             <a href="#" id="nav-memory" class="block p-3 rounded hover:bg-white/5 text-gray-400">Memory</a>
             <a href="#" class="block p-3 rounded hover:bg-white/5 text-gray-400">System</a>
@@ -163,6 +164,63 @@
             </div>
         </div>
 
+        <!-- Command View -->
+        <div id="command-view" class="hidden flex-1 flex flex-col h-full transition-opacity duration-300">
+            <header class="mb-8">
+                <h2 class="text-2xl font-semibold">Command Center</h2>
+                <p class="text-gray-400">Active agent orchestration and overrides.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Subagents List -->
+                <section class="p-6 rounded-xl border bolt-border glass">
+                    <h3 class="text-lg font-medium mb-4">Active Subagents</h3>
+                    <div id="subagents-list" class="space-y-4">
+                        <!-- Subagents will be injected here -->
+                        <p class="text-gray-500 text-sm">Searching for active signals...</p>
+                    </div>
+                </section>
+
+                <!-- Controls & Stats -->
+                <div class="space-y-8">
+                    <!-- Manual Controls -->
+                    <section class="p-6 rounded-xl border bolt-border glass">
+                        <h3 class="text-lg font-medium mb-4">Manual Override</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="btn-steer" class="p-4 rounded border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 transition-all font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                Steer
+                            </button>
+                            <button id="btn-abort" class="p-4 rounded border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all font-bold uppercase tracking-wide flex flex-col items-center justify-center gap-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                Abort
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Session Stats (Token Gauge) -->
+                    <section class="p-6 rounded-xl border bolt-border glass">
+                        <h3 class="text-lg font-medium mb-4">Session Resources</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs uppercase text-gray-500 font-bold mb-1">
+                                    <span>Token Usage</span>
+                                    <span id="token-text">0 / 0</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                                    <div id="token-bar" class="bg-yellow-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-sm pt-2 border-t border-white/5">
+                                <span class="text-gray-400">Estimated Cost</span>
+                                <span id="session-cost" class="font-mono text-green-400">$0.00</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
         <!-- Memory View -->
         <div id="memory-view" class="hidden flex-1 flex flex-col h-full transition-opacity duration-300">
             <header class="mb-8">
@@ -265,28 +323,35 @@
     };
 
     const dashboardView = document.getElementById('dashboard-view');
+    const commandView = document.getElementById('command-view');
     const memoryView = document.getElementById('memory-view');
     const navDashboard = document.getElementById('nav-dashboard');
+    const navCommand = document.getElementById('nav-command');
     const navMemory = document.getElementById('nav-memory');
     const memoryFileList = document.getElementById('memory-file-list');
     const fileContent = document.getElementById('file-content');
     const currentFileName = document.getElementById('current-file-name');
 
     function switchTab(tab) {
+        // Reset all
+        [dashboardView, commandView, memoryView].forEach(el => el.classList.add('hidden'));
+        [navDashboard, navCommand, navMemory].forEach(el => {
+            el.classList.remove('bg-yellow-400/10', 'text-yellow-400');
+            el.classList.add('text-gray-400', 'hover:bg-white/5');
+        });
+
         if (tab === 'dashboard') {
             dashboardView.classList.remove('hidden');
-            memoryView.classList.add('hidden');
             navDashboard.classList.add('bg-yellow-400/10', 'text-yellow-400');
             navDashboard.classList.remove('text-gray-400', 'hover:bg-white/5');
-            navMemory.classList.remove('bg-yellow-400/10', 'text-yellow-400');
-            navMemory.classList.add('text-gray-400', 'hover:bg-white/5');
-        } else {
-            dashboardView.classList.add('hidden');
+        } else if (tab === 'command') {
+            commandView.classList.remove('hidden');
+            navCommand.classList.add('bg-yellow-400/10', 'text-yellow-400');
+            navCommand.classList.remove('text-gray-400', 'hover:bg-white/5');
+        } else if (tab === 'memory') {
             memoryView.classList.remove('hidden');
             navMemory.classList.add('bg-yellow-400/10', 'text-yellow-400');
             navMemory.classList.remove('text-gray-400', 'hover:bg-white/5');
-            navDashboard.classList.remove('bg-yellow-400/10', 'text-yellow-400');
-            navDashboard.classList.add('text-gray-400', 'hover:bg-white/5');
             renderFileList();
         }
     }
@@ -320,6 +385,11 @@
         switchTab('dashboard');
     });
 
+    navCommand.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchTab('command');
+    });
+
     navMemory.addEventListener('click', (e) => {
         e.preventDefault();
         switchTab('memory');
@@ -333,11 +403,65 @@
     const liveLogs = document.getElementById('live-logs');
     const statusPulse = document.getElementById('status-pulse');
 
+    // Command View Elements
+    const subagentsList = document.getElementById('subagents-list');
+    const tokenText = document.getElementById('token-text');
+    const tokenBar = document.getElementById('token-bar');
+    const sessionCost = document.getElementById('session-cost');
+    const btnSteer = document.getElementById('btn-steer');
+    const btnAbort = document.getElementById('btn-abort');
+
+    if (btnSteer) {
+        btnSteer.addEventListener('click', () => {
+            alert("Steer signal sent (Simulation)");
+        });
+    }
+    if (btnAbort) {
+        btnAbort.addEventListener('click', () => {
+             if(confirm("ABORT SESSION?")) {
+                 alert("Abort signal sent (Simulation)");
+             }
+        });
+    }
+
+    function updateCommandView(data) {
+        // Update Subagents
+        if (data.subagents && subagentsList) {
+            subagentsList.innerHTML = data.subagents.map(agent => `
+                <div class="flex items-center justify-between p-3 rounded bg-white/5 border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full ${agent.status === 'active' ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}"></div>
+                        <div>
+                            <p class="font-bold text-sm text-gray-200">${agent.name}</p>
+                            <p class="text-xs text-gray-500">${agent.task}</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold tracking-wider ${agent.status === 'active' ? 'text-green-400' : 'text-gray-500'}">${agent.status}</span>
+                </div>
+            `).join('');
+        }
+
+        // Update Session Stats
+        if (data.session_status && tokenText && tokenBar && sessionCost) {
+            const { usage, limit, cost } = data.session_status;
+            tokenText.textContent = `${usage.toLocaleString()} / ${limit.toLocaleString()}`;
+            const percentage = Math.min((usage / limit) * 100, 100);
+            tokenBar.style.width = `${percentage}%`;
+            
+            // Color logic for bar
+            tokenBar.className = `h-2.5 rounded-full transition-all duration-500 ${percentage > 90 ? 'bg-red-500' : percentage > 75 ? 'bg-yellow-500' : 'bg-green-500'}`;
+            
+            sessionCost.textContent = `$${cost.toFixed(2)}`;
+        }
+    }
+
     let lastLogTimestamp = 0;
     let lastLogCount = -1;
 
     function updateLiveDashboard(data) {
         if (!data) return;
+        
+        updateCommandView(data);
         
         // Update Task Info
         if (liveTaskTitle.textContent !== (data.current_task.title || "Idle")) {
