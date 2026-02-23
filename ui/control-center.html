@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolt Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bolt-black: #0a0a0a;
+            --bolt-gold: #fbbf24;
+            --bolt-blue: #3b82f6;
+        }
+        body {
+            background-color: var(--bolt-black);
+            color: #e5e5e5;
+            font-family: 'Inter', sans-serif;
+        }
+        .bolt-border { border-color: rgba(251, 191, 36, 0.2); }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 border-r bolt-border flex flex-col glass">
+        <div class="p-6 border-b bolt-border">
+            <h1 class="text-xl font-bold text-yellow-400 flex items-center gap-2">
+                <span>⚡</span> BOLT
+            </h1>
+            <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Control Center</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="#" class="block p-3 rounded bg-yellow-400/10 text-yellow-400 font-medium">Dashboard</a>
+            <a href="#" class="block p-3 rounded hover:bg-white/5 text-gray-400">Tasks</a>
+            <a href="#" class="block p-3 rounded hover:bg-white/5 text-gray-400">Memory</a>
+            <a href="#" class="block p-3 rounded hover:bg-white/5 text-gray-400">System</a>
+        </nav>
+        <div class="p-4 border-t bolt-border text-xs text-gray-600">
+            v1.0.0-alpha
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-8">
+        <header class="mb-8">
+            <h2 class="text-2xl font-semibold">System Overview</h2>
+            <p class="text-gray-400">Real-time status of Bolt's operations.</p>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="p-6 rounded-xl border bolt-border glass">
+                <p class="text-sm text-gray-500 mb-1">Session Health</p>
+                <p class="text-3xl font-bold text-green-400">Optimal</p>
+            </div>
+            <div class="p-6 rounded-xl border bolt-border glass">
+                <p class="text-sm text-gray-500 mb-1">Active Tasks</p>
+                <p class="text-3xl font-bold text-blue-400">0</p>
+            </div>
+            <div class="p-6 rounded-xl border bolt-border glass">
+                <p class="text-sm text-gray-500 mb-1">Memory Index</p>
+                <p class="text-3xl font-bold text-yellow-400">6 Files</p>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Active Tasks -->
+            <section class="p-6 rounded-xl border bolt-border glass">
+                <h3 class="text-lg font-medium mb-4">Active Tasks</h3>
+                <div class="space-y-4">
+                    <div class="p-4 rounded border border-white/5 bg-white/5 flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-sm">Control Center Initialization</p>
+                            <p class="text-xs text-gray-500">Building UI components</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase">Running</span>
+                    </div>
+                    <p class="text-center text-gray-600 text-sm py-8">No other active sub-agents.</p>
+                </div>
+            </section>
+
+            <!-- Recent Memory -->
+            <section class="p-6 rounded-xl border bolt-border glass">
+                <h3 class="text-lg font-medium mb-4">Recent Memory</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between p-2 hover:bg-white/5 rounded text-sm cursor-pointer">
+                        <span class="flex items-center gap-2">📄 IDENTITY.md</span>
+                        <span class="text-gray-600 text-xs">2m ago</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 hover:bg-white/5 rounded text-sm cursor-pointer">
+                        <span class="flex items-center gap-2">📄 AGENTS.md</span>
+                        <span class="text-gray-600 text-xs">System</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 hover:bg-white/5 rounded text-sm cursor-pointer">
+                        <span class="flex items-center gap-2">📄 SOUL.md</span>
+                        <span class="text-gray-600 text-xs">System</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
