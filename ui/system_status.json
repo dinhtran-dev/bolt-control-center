@@ -1,1 +1,22 @@
-{"timestamp": 1771855064.0381498, "health": "Optimal", "active_threads": 1, "token_in": 8200, "token_out": 751, "session_id": "coding-agent"}
+{
+    "timestamp": 1771855064,
+    "health": "Optimal",
+    "active_threads": 1,
+    "token_in": 8200,
+    "token_out": 751,
+    "session_id": "coding-agent",
+    "limit": 100000,
+    "cost": 0.45,
+    "subagents": [
+        {
+            "name": "Jules",
+            "status": "active",
+            "task": "Optimizing database queries"
+        },
+        {
+            "name": "Meow",
+            "status": "idle",
+            "task": "Standing by"
+        }
+    ]
+}

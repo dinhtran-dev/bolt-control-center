@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "title": "Initial Task",
+        "status": "pending",
+        "priority": "medium"
+    },
+    {
+        "id": 2,
+        "title": "Review System Logs",
+        "status": "in-progress",
+        "priority": "high"
+    }
+]
